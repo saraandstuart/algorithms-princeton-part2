@@ -9,6 +9,20 @@ import org.junit.Test;
  */
 public class SAPTest {
     
+    @Test(expected=IndexOutOfBoundsException.class)
+    public void shouldThrowIndexOutOfBoundsExceptionForInvalidArgumentLessThanZero() {
+        //when
+        digraph1(-1, 1, 1, 1);
+        //then exception
+    }
+    
+    @Test(expected=IndexOutOfBoundsException.class)
+    public void shouldThrowIndexOutOfBoundsExceptionForInvalidArgumentGreaterThanV() {
+        //when
+        digraph1(3, 14, 1, 1);
+        //then exception
+    }
+    
     @Test
     public void test1ForDigraph1() {
         digraph1(3, 11, 4, 1);
