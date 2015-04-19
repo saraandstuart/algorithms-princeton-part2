@@ -20,32 +20,26 @@ public class SAP {
     // length of shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w){
         validateIndices(v, w);
-        
-        BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(G, v);
-        BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(G, w);
-        
-        List<Integer> ancestors = new ArrayList<Integer>();
-        for (int i = 0; i < G.V(); i++) {
-            if (bfsv.hasPathTo(i) && bfsw.hasPathTo(i)) {
-                ancestors.add(i);
-            }
-        }
-        
-//        int shortestAncestor = -1;
-        int minDist = Integer.MAX_VALUE;
-        for (int ancestor : ancestors) {
-            int dist = bfsv.distTo(ancestor) + bfsw.distTo(ancestor);
-            if (dist < minDist) {
-                minDist = dist;
-//                shortestAncestor = ancestor;
-            }
-        }
-        
-        if (Integer.MAX_VALUE == minDist) {
-            minDist = -1;
-        } 
-        
-        return minDist;
+        return new SAPProcessor(v, w).length;
+    }
+
+
+    // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
+    public int ancestor(int v, int w){
+        validateIndices(v, w);
+        return new SAPProcessor(v, w).ancestor;
+    }
+
+    // length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
+    public int length(Iterable<Integer> v, Iterable<Integer> w){
+        validateIndices(v, w);
+        return new SAPProcessor(v, w).length;
+    }
+
+    // a common ancestor that participates in shortest ancestral path; -1 if no such path
+    public int ancestor(Iterable<Integer> v, Iterable<Integer> w){
+        validateIndices(v, w);
+        return new SAPProcessor(v, w).ancestor;
     }
     
     private void validateIndices(int v, int w) {
@@ -54,72 +48,14 @@ public class SAP {
         }
     }
     
-    private boolean isValidIndex(int i) {
-        return (i > 0 && i < G.V());
-    }
-    
-    // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
-    public int ancestor(int v, int w){
-        validateIndices(v, w);
-        
-        BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(G, v);
-        BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(G, w);
-        
-        List<Integer> ancestors = new ArrayList<Integer>();
-        for (int i = 0; i < G.V(); i++) {
-            if (bfsv.hasPathTo(i) && bfsw.hasPathTo(i)) {
-                ancestors.add(i);
-            }
-        }
-        
-        int shortestAncestor = -1;
-        int minDist = Integer.MAX_VALUE;
-        for (int ancestor : ancestors) {
-            int dist = bfsv.distTo(ancestor) + bfsw.distTo(ancestor);
-            if (dist < minDist) {
-                minDist = dist;
-                shortestAncestor = ancestor;
-            }
-        }
-        
-        return shortestAncestor;
-    }
-
-    // length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
-    public int length(Iterable<Integer> v, Iterable<Integer> w){
-        validateIndices(v, w);
-        
-        BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(G, v);
-        BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(G, w);
-        
-        List<Integer> ancestors = new ArrayList<Integer>();
-        for (int i = 0; i < G.V(); i++) {
-            if (bfsv.hasPathTo(i) && bfsw.hasPathTo(i)) {
-                ancestors.add(i);
-            }
-        }
-        
-//        int shortestAncestor = -1;
-        int minDist = Integer.MAX_VALUE;
-        for (int ancestor : ancestors) {
-            int dist = bfsv.distTo(ancestor) + bfsw.distTo(ancestor);
-            if (dist < minDist) {
-                minDist = dist;
-//                shortestAncestor = ancestor;
-            }
-        }
-        
-        if (Integer.MAX_VALUE == minDist) {
-            minDist = -1;
-        } 
-        
-        return minDist;
-    }
-    
     private void validateIndices(Iterable<Integer> vVertices, Iterable<Integer> wVertices) {
         if (!isValidIndex(vVertices) || !isValidIndex(wVertices)) {
             throw new IndexOutOfBoundsException();
         }
+    }
+
+    private boolean isValidIndex(int i) {
+        return (i > 0 && i < G.V());
     }
     
     private boolean isValidIndex(Iterable<Integer> vertices) {
@@ -131,31 +67,49 @@ public class SAP {
         return true;
     }
 
-    // a common ancestor that participates in shortest ancestral path; -1 if no such path
-    public int ancestor(Iterable<Integer> v, Iterable<Integer> w){
-        validateIndices(v, w);
-        
-        BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(G, v);
-        BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(G, w);
-        
-        List<Integer> ancestors = new ArrayList<Integer>();
-        for (int i = 0; i < G.V(); i++) {
-            if (bfsv.hasPathTo(i) && bfsw.hasPathTo(i)) {
-                ancestors.add(i);
-            }
+
+    private class SAPProcessor {
+        int ancestor = -1;
+        int length = Integer.MAX_VALUE;
+
+        public SAPProcessor(int v, int w) {
+            BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(G, v);
+            BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(G, w);
+
+            process(bfsv, bfsw);
         }
-        
-        int shortestAncestor = -1;
-        int minDist = Integer.MAX_VALUE;
-        for (int ancestor : ancestors) {
-            int dist = bfsv.distTo(ancestor) + bfsw.distTo(ancestor);
-            if (dist < minDist) {
-                minDist = dist;
-                shortestAncestor = ancestor;
-            }
+
+        public SAPProcessor(Iterable<Integer> v, Iterable<Integer> w) {
+            BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(G, v);
+            BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(G, w);
+
+            process(bfsv, bfsw);
         }
-        
-        return shortestAncestor;
+
+        private void process(BreadthFirstDirectedPaths bfsv, BreadthFirstDirectedPaths bfsw) {
+            List<Integer> ancestors = ancestors(bfsv, bfsw);
+
+            for (int ancestor : ancestors) {
+                int dist = bfsv.distTo(ancestor) + bfsw.distTo(ancestor);
+                if (dist < length) {
+                    this.length = dist;
+                    this.ancestor = ancestor;
+                }
+            }
+            
+            this.length = (length == Integer.MAX_VALUE) ? -1 : length;
+        }
+
+        private List<Integer> ancestors(BreadthFirstDirectedPaths bfsv, BreadthFirstDirectedPaths bfsw) {
+            List<Integer> ancestors = new ArrayList<>();
+            for (int i = 0; i < G.V(); i++) {
+                if (bfsv.hasPathTo(i) && bfsw.hasPathTo(i)) {
+                    ancestors.add(i);
+                }
+            }
+            return ancestors;
+        }
+
     }
 
     // do unit testing of this class
