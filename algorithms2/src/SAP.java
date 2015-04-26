@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * SAP - Shortest Ancestral Path.<br/>
@@ -11,35 +13,37 @@ import java.util.List;
  */
 public class SAP {
 
+    private Map<String, SAPProcessor> cache;
     private Digraph G;
-
+    
     public SAP(Digraph G){
+        cache = new HashMap<String, SAPProcessor>();
         this.G = new Digraph(G);
     }
 
     // length of shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w){
         validateIndices(v, w);
-        return new SAPProcessor(v, w).length;
+        return cache(v, w).length;
     }
 
 
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w){
         validateIndices(v, w);
-        return new SAPProcessor(v, w).ancestor;
+        return cache(v, w).ancestor;
     }
 
     // length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
     public int length(Iterable<Integer> v, Iterable<Integer> w){
         validateIndices(v, w);
-        return new SAPProcessor(v, w).length;
+        return cache(v, w).length;
     }
 
     // a common ancestor that participates in shortest ancestral path; -1 if no such path
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w){
         validateIndices(v, w);
-        return new SAPProcessor(v, w).ancestor;
+        return cache(v, w).ancestor;
     }
     
     private void validateIndices(int v, int w) {
@@ -66,7 +70,36 @@ public class SAP {
         }
         return true;
     }
+    
+    private SAPProcessor cache(int v, int w) {
+        String key = v + "_" + w;
+        SAPProcessor result = null;
+        
+        if (cache.containsKey(key)) {
+            result = cache.get(key);
+        }
+        else {
+            result = new SAPProcessor(v, w);
+            cache.put(key, result);
+        }
+        
+        return result;
+    }
 
+    private SAPProcessor cache(Iterable<Integer> v, Iterable<Integer> w) {
+        String key = v.toString() + "_" + w.toString();
+        SAPProcessor result = null;
+        
+        if (cache.containsKey(key)) {
+            result = cache.get(key);
+        }
+        else {
+            result = new SAPProcessor(v, w);
+            cache.put(key, result);
+        }
+        
+        return result;
+    }
 
     private class SAPProcessor {
         int ancestor = -1;
