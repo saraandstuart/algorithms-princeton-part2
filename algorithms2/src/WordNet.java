@@ -8,9 +8,9 @@ public class WordNet {
    // constructor takes the name of the two input files
    public WordNet(String synsets, String hypernyms) {
        //read synsets
-       In file = new In(synsets);
-       while (file.hasNextLine()) {
-           String[] items = file.readLine().split(",");
+       In synsetFile = new In(synsets);
+       while (synsetFile.hasNextLine()) {
+           String[] items = synsetFile.readLine().split(",");
            String synsetId = items[0];
            String nouns = items[1];
            String[] nounArray = nouns.split(" ");
@@ -25,7 +25,18 @@ public class WordNet {
        
        
        //read hypernyms
-       
+       In hypernymFile = new In(hypernyms);
+       while (hypernymFile.hasNextLine()) {
+           String[] items = hypernymFile.readLine().split(",");
+           Integer synsetId = Integer.valueOf(items[0]);
+           SET<Integer> hypernums = new SET<Integer>();
+           for (int i = 1; i < items.length; i++) {
+               hypernums.add(Integer.valueOf(items[i]));
+           }
+           
+           System.out.println("synsetId=" + synsetId);
+           System.out.println("hypernums=" + hypernums);
+       }
        
    }
 
