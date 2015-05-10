@@ -1,3 +1,8 @@
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * WordNet - Immutable data type representing the wordnet graph.
  * 
@@ -5,39 +10,52 @@
  */
 public class WordNet {
 
+//    private final SAP sap;
+    private final Map<Integer, String> idToSynset;
+    private final Map<String, Set<Integer>> nounToIds;
+    
    // constructor takes the name of the two input files
    public WordNet(String synsets, String hypernyms) {
-       //read synsets
+       idToSynset = new HashMap<Integer, String>();
+       nounToIds = new HashMap<String, Set<Integer>>();
+       
+       readAndInitializeSynsets(synsets);
+       Digraph diGraph = readAndInitializeHypernyms(hypernyms);
+       
+   }
+
+   private void readAndInitializeSynsets(String synsets) {
        In synsetFile = new In(synsets);
+
        while (synsetFile.hasNextLine()) {
            String[] items = synsetFile.readLine().split(",");
-           String synsetId = items[0];
-           String nouns = items[1];
-           String[] nounArray = nouns.split(" ");
-           String gloss = items[2];
-           
-           System.out.println("synsetId=" + synsetId);
-           for (String noun : nounArray) {
-               System.out.println("noun=" + noun);
+           Integer synsetId = Integer.valueOf(items[0]);
+           String synset = items[1];
+           idToSynset.put(synsetId, synset);
+
+           String[] nouns = synset.split(" ");
+           for (String noun : nouns) {
+               Set<Integer> ids = nounToIds.containsKey(noun) ? nounToIds.get(noun) : new HashSet<Integer>();
+               ids.add(synsetId);
+               nounToIds.put(noun, ids);
            }
-           System.out.println("gloss=" + gloss);
        }
-       
-       
-       //read hypernyms
+   }
+   
+   private Digraph readAndInitializeHypernyms(String hypernyms) {
+       Digraph graph = new Digraph(idToSynset.size());
+
        In hypernymFile = new In(hypernyms);
        while (hypernymFile.hasNextLine()) {
            String[] items = hypernymFile.readLine().split(",");
            Integer synsetId = Integer.valueOf(items[0]);
-           SET<Integer> hypernums = new SET<Integer>();
            for (int i = 1; i < items.length; i++) {
-               hypernums.add(Integer.valueOf(items[i]));
+               Integer hypernymId = Integer.valueOf(items[i]);
+               graph.addEdge(synsetId, hypernymId);
            }
-           
-           System.out.println("synsetId=" + synsetId);
-           System.out.println("hypernums=" + hypernums);
        }
-       
+
+       return graph;
    }
 
    // returns all WordNet nouns
