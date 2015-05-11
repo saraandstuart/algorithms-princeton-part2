@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public class WordNet {
 
-//    private final SAP sap;
+    private final SAP sap;
     private final Map<Integer, String> idToSynset;
     private final Map<String, Set<Integer>> nounToIds;
     
@@ -20,8 +20,14 @@ public class WordNet {
        nounToIds = new HashMap<String, Set<Integer>>();
        
        readAndInitializeSynsets(synsets);
-       Digraph diGraph = readAndInitializeHypernyms(hypernyms);
+       Digraph graph = readAndInitializeHypernyms(hypernyms);
        
+       DirectedCycle cycle = new DirectedCycle(graph);
+       if (cycle.hasCycle() || !isRootedDAG(graph)) {
+           throw new IllegalArgumentException("The input is not a rooted DAG!");
+       }
+
+       sap = new SAP(graph);
    }
 
    private void readAndInitializeSynsets(String synsets) {
@@ -29,6 +35,7 @@ public class WordNet {
 
        while (synsetFile.hasNextLine()) {
            String[] items = synsetFile.readLine().split(",");
+           
            Integer synsetId = Integer.valueOf(items[0]);
            String synset = items[1];
            idToSynset.put(synsetId, synset);
@@ -48,6 +55,7 @@ public class WordNet {
        In hypernymFile = new In(hypernyms);
        while (hypernymFile.hasNextLine()) {
            String[] items = hypernymFile.readLine().split(",");
+           
            Integer synsetId = Integer.valueOf(items[0]);
            for (int i = 1; i < items.length; i++) {
                Integer hypernymId = Integer.valueOf(items[i]);
@@ -57,15 +65,32 @@ public class WordNet {
 
        return graph;
    }
+   
+   private boolean isRootedDAG(Digraph g) {
+       int roots = 0;
+       for (int i = 0; i < g.V(); i++) {
+           if (!g.adj(i).iterator().hasNext()) {
+               roots++;
+               if (roots > 1) {
+                   return false;
+               }
+           }
+       }
+
+       return roots == 1;
+   }
 
    // returns all WordNet nouns
    public Iterable<String> nouns() {
-       return null;
+       return nounToIds.keySet();
    }
 
    // is the word a WordNet noun?
    public boolean isNoun(String word) {
-       return false;
+       if (null == word || "".equals(word)) {
+           return false;
+       }
+       return nounToIds.containsKey(word);
    }
 
    // distance between nounA and nounB (defined below)
