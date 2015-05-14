@@ -16,6 +16,9 @@ public class WordNet {
     
    // constructor takes the name of the two input files
    public WordNet(String synsets, String hypernyms) {
+       if (synsets == null) throw new NullPointerException("Synsets argument was null");
+       if (hypernyms == null) throw new NullPointerException("Hypernyms argument was null");
+       
        idToSynset = new HashMap<Integer, String>();
        nounToIds = new HashMap<String, Set<Integer>>();
        
@@ -87,21 +90,38 @@ public class WordNet {
 
    // is the word a WordNet noun?
    public boolean isNoun(String word) {
-       if (null == word || "".equals(word)) {
-           return false;
-       }
+       if (word == null) throw new NullPointerException("Word argument was null");
+       if ("".equals(word)) return false;
+       
        return nounToIds.containsKey(word);
    }
 
    // distance between nounA and nounB (defined below)
    public int distance(String nounA, String nounB) {
-       return -1;
+       if (nounA == null) throw new NullPointerException("nounA argument was null");
+       if (nounB == null) throw new NullPointerException("nounB argument was null");
+       if (!isNoun(nounA)) throw new IllegalArgumentException("nounA argument is not a noun");
+       if (!isNoun(nounB)) throw new IllegalArgumentException("nounB argument is not a noun");
+       
+       Set<Integer> aIds = nounToIds.get(nounA);
+       Set<Integer> bIds = nounToIds.get(nounB);
+       
+       return sap.length(aIds, bIds);
    }
 
    // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
    // in a shortest ancestral path (defined below)
    public String sap(String nounA, String nounB) {
-       return null;
+       if (nounA == null) throw new NullPointerException("nounA argument was null");
+       if (nounB == null) throw new NullPointerException("nounB argument was null");
+       if (!isNoun(nounA)) throw new IllegalArgumentException("nounA argument is not a noun");
+       if (!isNoun(nounB)) throw new IllegalArgumentException("nounB argument is not a noun");
+       
+       Set<Integer> aIds = nounToIds.get(nounA);
+       Set<Integer> bIds = nounToIds.get(nounB);
+       int ancestor = sap.ancestor(aIds, bIds);
+       
+       return idToSynset.get(ancestor);
    }
 
    // do unit testing of this class
