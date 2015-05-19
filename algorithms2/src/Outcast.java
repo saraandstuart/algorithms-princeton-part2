@@ -1,7 +1,7 @@
 
 /**
  * Outcast - Immutable data type with method to identify the outcast of a collection of nouns.
- *           Which is that noun that is furthest (greatest distance) from all other nouns 
+ *           Which is that noun that is farthest (greatest distance) from all other nouns 
  *           in the collection.
  * 
  * @author Stuart Shannon
@@ -16,7 +16,24 @@ public class Outcast {
 
     // given an array of WordNet nouns, return an outcast
     public String outcast(String[] nouns) {
-        return null;
+        String outcast = null;
+        int maxDist = 0;
+        
+        for (String nounUnderTest : nouns) {
+            int dist = 0;
+            for (String otherNoun : nouns) {
+                if (!nounUnderTest.equals(otherNoun)) {
+                    dist += wordNet.distance(nounUnderTest, otherNoun);
+                }
+            }
+            
+            if (dist > maxDist) {
+                maxDist = dist;
+                outcast = nounUnderTest;
+            }
+        }
+        
+        return outcast;
     }
 
     /**
