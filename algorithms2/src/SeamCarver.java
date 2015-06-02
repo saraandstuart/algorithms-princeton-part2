@@ -5,42 +5,71 @@
  */
 public class SeamCarver {
 
-    // create a seam carver object based on the given picture
+    private Picture picture;
+    
     public SeamCarver(Picture picture) {
-        
+        this.picture = picture;
     }
-    // current picture
+    
     public Picture picture() {
-        
-        return null;
+        return picture;
     }
-    // width of current picture
+    
     public int width() {
-        
-        return -1;
+        return picture.width();
     }
-    // height of current picture
+    
     public int height() {
-        
-        return -1;
+        return picture.height();
     }
-    // energy of pixel at column x and row y
+    /**
+     *  Energy of pixel at column x and row y
+     */
     public double energy(int x, int y) {
+        if (x < 0 || x > width() - 1) throw new IndexOutOfBoundsException("x index out of bounds, x: " + x);
+        if (y < 0 || y > height() - 1) throw new IndexOutOfBoundsException("y index out of bounds, y: " + y);
+        
+        
         return -1d;
     }
-    // sequence of indices for horizontal seam
+    
     public int[] findHorizontalSeam() {
         return null;
     }
-    // sequence of indices for vertical seam
+    
     public int[] findVerticalSeam() {
         return null;
     }
-    // remove horizontal seam from current picture
+    
+    /**
+     * Remove horizontal seam from current picture
+     */
     public void removeHorizontalSeam(int[] seam) {
+        validateSeam(seam);
+        if (seam.length > width()) {
+            throw new IllegalArgumentException("Seam length must not be greater than image width.");
+        }
     }
-    // remove vertical seam from current picture
+    
+    /**
+     * Remove vertical seam from current picture
+     */
     public void removeVerticalSeam(int[] seam) {
+        validateSeam(seam);
+        if (seam.length > height()) {
+            throw new IllegalArgumentException("Seam length must not be greater than image height.");
+        }
+    }
+    
+    private void validateSeam(int[] seam) {
+        if (seam == null) throw new NullPointerException("seam can not be null");
+        if (seam.length <= 1) throw new IllegalArgumentException("Seam size must be greater than 1.");
+
+        for (int i = 0; i < seam.length - 1; i++) {
+            if (Math.abs(seam[i] - seam[i + 1]) > 1) {
+                throw new IllegalArgumentException("Two adjacent seam entries differ by more than one.");
+            }
+        }
     }
     
 }
