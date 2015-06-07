@@ -29,11 +29,17 @@ public class SeamCarver {
      *  Energy of pixel at column x and row y.
      *  Uses the dual gradient energy function which is:
      *  
-     *  The energy of pixel (x, y) is Δx^2(x, y) + Δy^2(x, y), where the 
-     *  square of the x-gradient Δx^2(x, y) = Rx(x, y)^2 + Gx(x, y)^2 + Bx(x, y)^2, 
-     *  and where the central differences Rx(x, y), Gx(x, y), and Bx(x, y) 
+     *  The energy of pixel (x, y) is Δx^2(x, y) + Δy^2(x, y), 
+     *  where the square of the x-gradient 
+     *  Δx^2(x, y) = Rx(x, y)^2 + Gx(x, y)^2 + Bx(x, y)^2, 
+     *  and where the central differences 
+     *  Rx(x, y), Gx(x, y), and Bx(x, y) 
      *  are the absolute value in differences of red, green, and blue 
      *  components between pixel (x + 1, y) and pixel (x − 1, y).
+     *  The square of the y-gradient Δy^2(x, y) is defined in an analogous 
+     *  manner.
+     *  We define the energy of pixels at the border of the image to be 
+     *  255^2 + 255^2 + 255^2 = 195075
      */
     public double energy(int x, int y) {
         if (x < 0 || x > width() - 1) throw new IndexOutOfBoundsException("x index out of bounds, x: " + x);
@@ -43,15 +49,15 @@ public class SeamCarver {
             return BORDER_PIXEL_ENERGY;
         }
         
-        double xDiff = gradient(picture.get(x - 1, y), picture.get(x + 1, y));
-        double yDiff = gradient(picture.get(x, y - 1), picture.get(x, y + 1));
-        return xDiff + yDiff;
+        double deltaXSquared = sumRgbDeltasSquared(picture.get(x - 1, y), picture.get(x + 1, y));
+        double deltaYSquared = sumRgbDeltasSquared(picture.get(x, y - 1), picture.get(x, y + 1));
+        return deltaXSquared + deltaYSquared;
     }
     
     /**
      * Square of the gradient Δ^2(x, y) = R(x, y)^2 + G(x, y)^2 + B(x, y)^2
      */
-    private double gradient(Color a, Color b) {
+    private double sumRgbDeltasSquared(Color a, Color b) {
         int red = a.getRed() - b.getRed();
         int green = a.getGreen() - b.getGreen();
         int blue = a.getBlue() - b.getBlue();
