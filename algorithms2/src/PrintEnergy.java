@@ -23,7 +23,7 @@ public class PrintEnergy {
         for (int j = 0; j < sc.height(); j++)
         {
             for (int i = 0; i < sc.width(); i++)
-                System.out.printf("%9.0f ", sc.energy(i, j));
+                System.out.printf("%9.0f, ", sc.energy(i, j));
 
             System.out.println();
         }
