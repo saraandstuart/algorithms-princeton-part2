@@ -9,6 +9,30 @@ import org.junit.Test;
  */
 public class SeamCarverTest {
 
+    @Test(expected=IndexOutOfBoundsException.class)
+    public void shouldThrowIndexOutOfBoundsExceptionForColumnIndexGreaterThanWidthMinusOne() {
+        //given
+        Picture inputImg = new Picture("seamCarving/3x7.png");
+        SeamCarver sc = new SeamCarver(inputImg);
+        int height = sc.height();
+        int width = sc.width();
+        //when
+        sc.energy(width, height-1);
+        // then exception
+    }
+
+    @Test(expected=IndexOutOfBoundsException.class)
+    public void shouldThrowIndexOutOfBoundsExceptionForRowIndexGreaterThanHeightMinusOne() {
+        //given
+        Picture inputImg = new Picture("seamCarving/4x6.png");
+        SeamCarver sc = new SeamCarver(inputImg);
+        int height = sc.height();
+        int width = sc.width();
+        //when
+        sc.energy(width-1, height);
+        // then exception
+    }
+    
     @Test
     public void test3x7PixelsEnergy() {
         double[][] expectedEnergy = new double[][]{
