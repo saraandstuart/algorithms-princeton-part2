@@ -18,7 +18,7 @@ public class SeamCarverTest {
         int width = sc.width();
         //when
         sc.energy(width, height-1);
-        // then exception
+        //then exception
     }
 
     @Test(expected=IndexOutOfBoundsException.class)
@@ -30,7 +30,7 @@ public class SeamCarverTest {
         int width = sc.width();
         //when
         sc.energy(width-1, height);
-        // then exception
+        //then exception
     }
     
     @Test
