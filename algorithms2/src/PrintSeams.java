@@ -1,3 +1,5 @@
+import edu.princeton.cs.algs4.Picture;
+
 /*************************************************************************
  *  Compilation:  javac PrintSeams.java
  *  Execution:    java PrintSeams input.png

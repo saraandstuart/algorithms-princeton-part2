@@ -1,3 +1,6 @@
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
+
 
 /**
  * Outcast - Immutable data type with method to identify the outcast of a collection of nouns.

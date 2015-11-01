@@ -1,5 +1,7 @@
 import java.awt.Color;
 
+import edu.princeton.cs.algs4.Picture;
+
 /**
  * Implementation of image re-sizing using the seam carving technique.
  * 

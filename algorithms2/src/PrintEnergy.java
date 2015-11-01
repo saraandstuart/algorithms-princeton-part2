@@ -1,3 +1,5 @@
+import edu.princeton.cs.algs4.Picture;
+
 /*************************************************************************
  *  Compilation:  javac PrintEnergy.java
  *  Execution:    java PrintEnergy input.png

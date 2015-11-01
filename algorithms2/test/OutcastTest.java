@@ -2,6 +2,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import edu.princeton.cs.algs4.In;
+
 /**
  * {@link Outcast} unit test
  * 
