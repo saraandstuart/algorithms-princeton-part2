@@ -12,8 +12,8 @@ import edu.princeton.cs.algs4.In;
  * 
  * @author Stuart Shannon
  */
-public class WordNet {
-
+public class WordNet
+{
     private final SAP sap;
     private final Map<Integer, String> idToSynset;
     private final Map<String, Set<Integer>> nounToIds;

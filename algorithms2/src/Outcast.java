@@ -8,8 +8,8 @@ import edu.princeton.cs.algs4.StdOut;
  * 
  * @author Stuart Shannon
  */
-public class Outcast {
-
+public class Outcast
+{
     private WordNet wordNet;
     
     public Outcast(WordNet wordnet) 

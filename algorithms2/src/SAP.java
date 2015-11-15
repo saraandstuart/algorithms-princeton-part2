@@ -17,8 +17,8 @@ import edu.princeton.cs.algs4.StdOut;
  * 
  * @author Stuart Shannon
  */
-public class SAP {
-
+public class SAP
+{
     private Map<String, SAPProcessor> cache;
     private Digraph G;
     
