@@ -19,53 +19,64 @@ public class WordNet {
     private final Map<String, Set<Integer>> nounToIds;
     
    // constructor takes the name of the two input files
-   public WordNet(String synsets, String hypernyms) {
+   public WordNet(String synsets, String hypernyms) 
+   {
        if (synsets == null) throw new NullPointerException("Synsets argument was null");
        if (hypernyms == null) throw new NullPointerException("Hypernyms argument was null");
        
-       idToSynset = new HashMap<Integer, String>();
-       nounToIds = new HashMap<String, Set<Integer>>();
+       idToSynset = new HashMap<>();
+       nounToIds = new HashMap<>();
        
        readAndInitializeSynsets(synsets);
        Digraph graph = readAndInitializeHypernyms(hypernyms);
        
        DirectedCycle cycle = new DirectedCycle(graph);
-       if (cycle.hasCycle() || !isRootedDAG(graph)) {
+       if (cycle.hasCycle() || !isRootedDAG(graph))
+       {
            throw new IllegalArgumentException("The input is not a rooted DAG!");
        }
 
        sap = new SAP(graph);
    }
 
-   private void readAndInitializeSynsets(String synsets) {
+   private void readAndInitializeSynsets(String synsets) 
+   {
        In synsetFile = new In(synsets);
 
-       while (synsetFile.hasNextLine()) {
+       while (synsetFile.hasNextLine()) 
+       {
            String[] items = synsetFile.readLine().split(",");
            
-           Integer synsetId = Integer.valueOf(items[0]);
+           int synsetId = Integer.parseInt(items[0]);
            String synset = items[1];
            idToSynset.put(synsetId, synset);
 
            String[] nouns = synset.split(" ");
-           for (String noun : nouns) {
-               Set<Integer> ids = nounToIds.containsKey(noun) ? nounToIds.get(noun) : new HashSet<Integer>();
+           for (String noun : nouns) 
+           {
+               Set<Integer> ids = new HashSet<>();
+               if (nounToIds.containsKey(noun))
+               {
+                   ids = nounToIds.get(noun);
+               }
                ids.add(synsetId);
                nounToIds.put(noun, ids);
            }
        }
    }
    
-   private Digraph readAndInitializeHypernyms(String hypernyms) {
+   private Digraph readAndInitializeHypernyms(String hypernyms) 
+   {
        Digraph graph = new Digraph(idToSynset.size());
 
        In hypernymFile = new In(hypernyms);
        while (hypernymFile.hasNextLine()) {
            String[] items = hypernymFile.readLine().split(",");
            
-           Integer synsetId = Integer.valueOf(items[0]);
-           for (int i = 1; i < items.length; i++) {
-               Integer hypernymId = Integer.valueOf(items[i]);
+           int synsetId = Integer.parseInt(items[0]);
+           for (int i = 1; i < items.length; i++) 
+           {
+               int hypernymId = Integer.parseInt(items[i]);
                graph.addEdge(synsetId, hypernymId);
            }
        }
@@ -73,12 +84,16 @@ public class WordNet {
        return graph;
    }
    
-   private boolean isRootedDAG(Digraph g) {
+   private boolean isRootedDAG(Digraph g) 
+   {
        int roots = 0;
-       for (int i = 0; i < g.V(); i++) {
-           if (!g.adj(i).iterator().hasNext()) {
+       for (int i = 0; i < g.V(); i++) 
+       {
+           if (!g.adj(i).iterator().hasNext()) 
+           {
                roots++;
-               if (roots > 1) {
+               if (roots > 1)
+               {
                    return false;
                }
            }
@@ -88,12 +103,14 @@ public class WordNet {
    }
 
    // returns all WordNet nouns
-   public Iterable<String> nouns() {
+   public Iterable<String> nouns() 
+   {
        return nounToIds.keySet();
    }
 
    // is the word a WordNet noun?
-   public boolean isNoun(String word) {
+   public boolean isNoun(String word) 
+   {
        if (word == null) throw new NullPointerException("Word argument was null");
        if ("".equals(word)) return false;
        
@@ -101,7 +118,8 @@ public class WordNet {
    }
 
    // distance between nounA and nounB (defined below)
-   public int distance(String nounA, String nounB) {
+   public int distance(String nounA, String nounB) 
+   {
        if (nounA == null) throw new NullPointerException("nounA argument was null");
        if (nounB == null) throw new NullPointerException("nounB argument was null");
        if (!isNoun(nounA)) throw new IllegalArgumentException("nounA argument is not a noun");
@@ -115,7 +133,8 @@ public class WordNet {
 
    // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
    // in a shortest ancestral path (defined below)
-   public String sap(String nounA, String nounB) {
+   public String sap(String nounA, String nounB) 
+   {
        if (nounA == null) throw new NullPointerException("nounA argument was null");
        if (nounB == null) throw new NullPointerException("nounB argument was null");
        if (!isNoun(nounA)) throw new IllegalArgumentException("nounA argument is not a noun");
@@ -129,7 +148,8 @@ public class WordNet {
    }
 
    // do unit testing of this class
-   public static void main(String[] args) {
+   public static void main(String[] args) 
+   {
        String synsets = args[0];
        String hypernyms = args[1];
        

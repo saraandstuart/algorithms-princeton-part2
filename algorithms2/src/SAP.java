@@ -22,7 +22,8 @@ public class SAP {
     private Map<String, SAPProcessor> cache;
     private Digraph G;
     
-    public SAP(Digraph G){
+    public SAP(Digraph G)
+    {
         cache = new HashMap<String, SAPProcessor>();
         this.G = new Digraph(G);
     }
@@ -35,56 +36,72 @@ public class SAP {
 
 
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
-    public int ancestor(int v, int w){
+    public int ancestor(int v, int w)
+    {
         validateIndices(v, w);
         return cache(v, w).ancestor;
     }
 
     // length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
-    public int length(Iterable<Integer> v, Iterable<Integer> w){
+    public int length(Iterable<Integer> v, Iterable<Integer> w)
+    {
         validateIndices(v, w);
         return cache(v, w).length;
     }
 
     // a common ancestor that participates in shortest ancestral path; -1 if no such path
-    public int ancestor(Iterable<Integer> v, Iterable<Integer> w){
+    public int ancestor(Iterable<Integer> v, Iterable<Integer> w)
+    {
         validateIndices(v, w);
         return cache(v, w).ancestor;
     }
     
-    private void validateIndices(int v, int w) {
-        if (!isValidIndex(v) || !isValidIndex(w)) {
+    private void validateIndices(int v, int w)
+    {
+        if (!isValidIndex(v) || !isValidIndex(w)) 
+        {
             throw new IndexOutOfBoundsException();
         }
     }
     
-    private void validateIndices(Iterable<Integer> vVertices, Iterable<Integer> wVertices) {
-        if (!isValidIndex(vVertices) || !isValidIndex(wVertices)) {
+    private void validateIndices(
+            Iterable<Integer> vVertices, 
+            Iterable<Integer> wVertices) 
+    {
+        if (!isValidIndex(vVertices) || !isValidIndex(wVertices)) 
+        {
             throw new IndexOutOfBoundsException();
         }
     }
 
-    private boolean isValidIndex(int i) {
+    private boolean isValidIndex(int i) 
+    {
         return (i > 0 && i < G.V());
     }
     
-    private boolean isValidIndex(Iterable<Integer> vertices) {
-        for (Integer vertex : vertices) {
-            if (!isValidIndex(vertex)) {
+    private boolean isValidIndex(Iterable<Integer> vertices) 
+    {
+        for (int vertex : vertices) 
+        {
+            if (!isValidIndex(vertex)) 
+            {
                 return false;
             }
         }
         return true;
     }
     
-    private SAPProcessor cache(int v, int w) {
+    private SAPProcessor cache(int v, int w) 
+    {
         String key = v + "_" + w;
         SAPProcessor result = null;
         
-        if (cache.containsKey(key)) {
+        if (cache.containsKey(key)) 
+        {
             result = cache.get(key);
         }
-        else {
+        else 
+        {
             result = new SAPProcessor(v, w);
             cache.put(key, result);
         }
@@ -92,14 +109,17 @@ public class SAP {
         return result;
     }
 
-    private SAPProcessor cache(Iterable<Integer> v, Iterable<Integer> w) {
+    private SAPProcessor cache(Iterable<Integer> v, Iterable<Integer> w) 
+    {
         String key = v.toString() + "_" + w.toString();
         SAPProcessor result = null;
         
-        if (cache.containsKey(key)) {
+        if (cache.containsKey(key)) 
+        {
             result = cache.get(key);
         }
-        else {
+        else 
+        {
             result = new SAPProcessor(v, w);
             cache.put(key, result);
         }
@@ -107,56 +127,73 @@ public class SAP {
         return result;
     }
 
-    private class SAPProcessor {
-        int ancestor = -1;
-        int length = Integer.MAX_VALUE;
+    private class SAPProcessor 
+    {
+        private int ancestor = -1;
+        private int length = Integer.MAX_VALUE;
 
-        public SAPProcessor(int v, int w) {
+        public SAPProcessor(int v, int w)
+        {
             BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(G, v);
             BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(G, w);
 
             process(bfsv, bfsw);
         }
 
-        public SAPProcessor(Iterable<Integer> v, Iterable<Integer> w) {
+        public SAPProcessor(Iterable<Integer> v, Iterable<Integer> w) 
+        {
             BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(G, v);
             BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(G, w);
 
             process(bfsv, bfsw);
         }
 
-        private void process(BreadthFirstDirectedPaths bfsv, BreadthFirstDirectedPaths bfsw) {
+        private void process(
+                BreadthFirstDirectedPaths bfsv, 
+                BreadthFirstDirectedPaths bfsw) 
+        {
             List<Integer> ancestors = ancestors(bfsv, bfsw);
 
-            for (int ancestor : ancestors) {
-                int dist = bfsv.distTo(ancestor) + bfsw.distTo(ancestor);
-                if (dist < length) {
-                    this.length = dist;
-                    this.ancestor = ancestor;
+            for (int currAncestor : ancestors) 
+            {
+                int currLength = bfsv.distTo(currAncestor) + bfsw.distTo(currAncestor);
+                if (currLength < length) 
+                {
+                    this.length = currLength;
+                    this.ancestor = currAncestor;
                 }
             }
             
-            this.length = (length == Integer.MAX_VALUE) ? -1 : length;
+            if (length == Integer.MAX_VALUE) 
+            {
+                this.length = -1;
+            }
         }
 
-        private List<Integer> ancestors(BreadthFirstDirectedPaths bfsv, BreadthFirstDirectedPaths bfsw) {
+        private List<Integer> ancestors(
+                BreadthFirstDirectedPaths bfsv, 
+                BreadthFirstDirectedPaths bfsw) 
+        {
             List<Integer> ancestors = new ArrayList<>();
-            for (int i = 0; i < G.V(); i++) {
-                if (bfsv.hasPathTo(i) && bfsw.hasPathTo(i)) {
+            for (int i = 0; i < G.V(); i++) 
+            {
+                if (bfsv.hasPathTo(i) && bfsw.hasPathTo(i)) 
+                {
                     ancestors.add(i);
                 }
             }
             return ancestors;
         }
-
     }
 
     // do unit testing of this class
-    public static void main(String[] args) {
+    public static void main(String[] args) 
+    {
         In in = new In(args[0]);
         Digraph G = new Digraph(in);
         SAP sap = new SAP(G);
-        while (!StdIn.isEmpty()) {
+        while (!StdIn.isEmpty()) 
+        {
             int v = StdIn.readInt();
             int w = StdIn.readInt();
             int length   = sap.length(v, w);
