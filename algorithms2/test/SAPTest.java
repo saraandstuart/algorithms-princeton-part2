@@ -19,43 +19,48 @@ public class SAPTest {
     @Test(expected=IndexOutOfBoundsException.class)
     public void shouldThrowIndexOutOfBoundsExceptionForInvalidArgumentLessThanZero() {
         //when
-        digraph1(-1, 1, 1, 1, DIGRAPH_1_PATH);
+        digraph(-1, 1, 1, 1, DIGRAPH_1_PATH);
         //then exception
     }
     
     @Test(expected=IndexOutOfBoundsException.class)
     public void shouldThrowIndexOutOfBoundsExceptionForInvalidArgumentGreaterThanV() {
         //when
-        digraph1(3, 14, 1, 1, DIGRAPH_1_PATH);
+        digraph(3, 14, 1, 1, DIGRAPH_1_PATH);
         //then exception
     }
     
     @Test
     public void test1ForDigraph1() {
-        digraph1(3, 11, 4, 1, DIGRAPH_1_PATH);
+        digraph(3, 11, 4, 1, DIGRAPH_1_PATH);
     }
     
     @Test
     public void test2ForDigraph1() {
-        digraph1(9, 12, 3, 5, DIGRAPH_1_PATH);
+        digraph(9, 12, 3, 5, DIGRAPH_1_PATH);
     }
     
     @Test
     public void test3ForDigraph1() {
-        digraph1(7, 2, 4, 0, DIGRAPH_1_PATH);
+        digraph(7, 2, 4, 0, DIGRAPH_1_PATH);
     }
     
     @Test
     public void test4ForDigraph1() {
-        digraph1(1, 6, -1, -1, DIGRAPH_1_PATH);
+        digraph(1, 6, -1, -1, DIGRAPH_1_PATH);
+    }
+    
+    @Test
+    public void test5ForDigraph1() {
+        digraph(0, 3, 2, 0, DIGRAPH_1_PATH);
     }
     
     @Test
     public void test1ForDigraph2() {
-        digraph1(1, 5, 2, 0, DIGRAPH_2_PATH);
+        digraph(1, 5, 2, 0, DIGRAPH_2_PATH);
     }
     
-    private void digraph1(int v, int w, int expectedLength, int expectedAncestor, String resourcePath) {
+    private void digraph(int v, int w, int expectedLength, int expectedAncestor, String resourcePath) {
         //given
         In in = new In(resourcePath);
         Digraph G = new Digraph(in);

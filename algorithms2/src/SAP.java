@@ -76,7 +76,7 @@ public class SAP
 
     private boolean isValidIndex(int i) 
     {
-        return (i > 0 && i < G.V());
+        return (i >= 0 && i < G.V());
     }
     
     private boolean isValidIndex(Iterable<Integer> vertices) 
