@@ -12,3 +12,4 @@ Week 2 - Seam Carving
  - **Seam.java** - Algorithm for calculating the seam based on graph vertex relaxation using pixel energies.
  - **Dimension.java** - Helper class for converting two dimensional coordinates to one dimensional and vice versa.
  - **Coordinate.java** - Value object to hold 2 dimensional coordinates.
+ - **DirectedVertex.java** - Representation of a graph vertex with weight and reachable vertices.
