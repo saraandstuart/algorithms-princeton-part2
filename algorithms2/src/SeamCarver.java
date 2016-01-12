@@ -7,8 +7,8 @@ import edu.princeton.cs.algs4.Picture;
  * 
  * @author Stuart Shannon
  */
-public class SeamCarver {
-
+public class SeamCarver
+{
     private static final double BORDER_PIXEL_ENERGY = 1000.0;
     private Picture picture;
     private double[][] energy;
@@ -122,5 +122,4 @@ public class SeamCarver {
             }
         }
     }
-    
 }
