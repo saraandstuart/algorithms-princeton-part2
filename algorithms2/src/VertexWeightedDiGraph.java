@@ -124,9 +124,10 @@ public class VertexWeightedDiGraph
         return vertices;
     }
     
-    public Dimension geDimension()
+    public int getXCoordinate(int index)
     {
-        return dimension;
+        Coordinate coord = dimension.two(index);
+        return coord.x;
     }
     
 }

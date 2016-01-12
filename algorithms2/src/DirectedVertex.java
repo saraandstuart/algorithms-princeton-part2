@@ -1,9 +1,7 @@
 import java.util.Arrays;
 
-
-
 /**
- * Representation of a graph vertex with weight and directed edges for {@link SeamCarver}
+ * Representation of a graph vertex with weight and reachable vertices for {@link SeamCarver}
  * 
  * @author Stuart Shannon
  */

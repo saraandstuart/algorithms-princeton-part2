@@ -5,15 +5,15 @@ import edu.princeton.cs.algs4.Stack;
  */
 public class Seam
 {
-    private double[] energyTo;  // energyTo[v] = energy of least energy s->v path
-    private int[] vertexTo;     // vertexTo[v] = last vertex on least energy s->v path
-    private Dimension dimension; //find a better way to get this info
+    private double[] energyTo;          // energyTo[v] = energy of least energy s->v path
+    private int[] vertexTo;             // vertexTo[v] = last vertex on least energy s->v path
+    private VertexWeightedDiGraph g;
 
     public Seam(VertexWeightedDiGraph G)
     {
         energyTo = new double[G.V()];
         vertexTo = new int[G.V()];
-        dimension = G.geDimension();
+        g = G;
 
         for (int i = 0; i < G.V(); i++)
         {
@@ -57,7 +57,7 @@ public class Seam
     private Stack<Integer> pathToStack(int v)
     {
         Stack<Integer> path = new Stack<Integer>();
-        for (int from = vertexTo[v]; from != 0; from = vertexTo[from]) 
+        for (int from = vertexTo[v]; from != 0; from = vertexTo[from])
         {
             path.push(from);
         }
@@ -73,9 +73,7 @@ public class Seam
         int index = 0;
         for (int i : path)
         {
-            Coordinate coordinate = dimension.two(i);
-            int xCoord = coordinate.x;
-            result[index] = xCoord;
+            result[index] = g.getXCoordinate(i);
             index ++;
         }
 
