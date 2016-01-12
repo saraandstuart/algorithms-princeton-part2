@@ -7,4 +7,8 @@ Week 1 - WordNet
  - **Outcast.java** - Identifies outcasts.
 
 Week 2 - Seam Carving
- - **SeamCarver.java** - Seam-carving is a content-aware image resizing technique where the image is reduced in size by one pixel of height (or width) at a time
+ - **SeamCarver.java** - Seam-carving is a content-aware image resizing technique where the image is reduced in size by one pixel of height (or width) at a time.
+ - **VertexWeightedDiGraph.java** - Matrix graph representation of pixel energies.
+ - **Seam.java** - Algorithm for calculating the seam based on graph vertex relaxation using pixel energies.
+ - **Dimension.java** - Helper class for converting two dimensional coordinates to one dimensional and vice versa.
+ - **Coordinate.java** - Value object to hold 2 dimensional coordinates.
