@@ -13,26 +13,32 @@ public class SeamCarver
     private Picture picture;
     private double[][] energy;
     
-    public SeamCarver(Picture picture) {
+    public SeamCarver(Picture picture) 
+    {
         this.picture = picture;
         
         energy = new double[picture.width()][picture.height()];
-        for (int y = 0; y < height(); y++) {
-            for (int x = 0; x < width(); x++) {
+        for (int y = 0; y < height(); y++) 
+        {
+            for (int x = 0; x < width(); x++) 
+            {
                 energy[x][y] = energy(x, y);
             }
         }
     }
     
-    public Picture picture() {
+    public Picture picture() 
+    {
         return picture;
     }
     
-    public int width() {
+    public int width() 
+    {
         return picture.width();
     }
     
-    public int height() {
+    public int height() 
+    {
         return picture.height();
     }
     /**
@@ -52,11 +58,13 @@ public class SeamCarver
      *  <p>
      *  We define the energy of pixels at the border of the image to be 1000.
      */
-    public double energy(int x, int y) {
+    public double energy(int x, int y) 
+    {
         if (x < 0 || x > width() - 1) throw new IndexOutOfBoundsException("x index out of bounds, x: " + x);
         if (y < 0 || y > height() - 1) throw new IndexOutOfBoundsException("y index out of bounds, y: " + y);
         
-        if (x == 0 || x == width() - 1 || y == 0 || y == height() - 1) {
+        if (x == 0 || x == width() - 1 || y == 0 || y == height() - 1) 
+        {
             return BORDER_PIXEL_ENERGY;
         }
         
@@ -69,7 +77,8 @@ public class SeamCarver
     /**
      * Square of the gradient Δ^2(x, y) = R(x, y)^2 + G(x, y)^2 + B(x, y)^2
      */
-    private double sumRgbDeltasSquared(Color a, Color b) {
+    private double sumRgbDeltasSquared(Color a, Color b) 
+    {
         int red = a.getRed() - b.getRed();
         int green = a.getGreen() - b.getGreen();
         int blue = a.getBlue() - b.getBlue();
@@ -79,15 +88,23 @@ public class SeamCarver
     /**
      * @return a sequence of indices for horizontal seam
      */
-    public int[] findHorizontalSeam() {
-        return null;
+    public int[] findHorizontalSeam() 
+    {
+        double[][] transposedEnergy = transposeMatrix(energy);
+        return findSeam(transposedEnergy);
     }
     
     /**
      * @return a sequence of indices for vertical seam
      */
-    public int[] findVerticalSeam() {
-        VertexWeightedDiGraph graph = new VertexWeightedDiGraph(energy);
+    public int[] findVerticalSeam() 
+    {
+        return findSeam(energy);
+    }
+    
+    private int[] findSeam(double[][] matrix)
+    {
+        VertexWeightedDiGraph graph = new VertexWeightedDiGraph(matrix);
         Seam seam = new Seam(graph);
         return seam.seam();
     }
@@ -105,21 +122,44 @@ public class SeamCarver
     /**
      * Remove vertical seam from current picture
      */
-    public void removeVerticalSeam(int[] seam) {
+    public void removeVerticalSeam(int[] seam) 
+    {
         validateSeam(seam);
-        if (seam.length > height()) {
+        if (seam.length > height()) 
+        {
             throw new IllegalArgumentException("Seam length must not be greater than image height.");
         }
     }
     
-    private void validateSeam(int[] seam) {
+    private void validateSeam(int[] seam) 
+    {
         if (seam == null) throw new NullPointerException("seam can not be null");
         if (seam.length <= 1) throw new IllegalArgumentException("Seam size must be greater than 1.");
 
-        for (int i = 0; i < seam.length - 1; i++) {
-            if (Math.abs(seam[i] - seam[i + 1]) > 1) {
+        for (int i = 0; i < seam.length - 1; i++) 
+        {
+            if (Math.abs(seam[i] - seam[i + 1]) > 1) 
+            {
                 throw new IllegalArgumentException("Two adjacent seam entries differ by more than one.");
             }
         }
+    }
+    
+    public static double[][] transposeMatrix(double [][] original)
+    {
+        int rows = original[0].length;
+        int columns = original.length;
+        
+        double[][] transposed = new double[rows][columns];
+        
+        for (int i = 0; i < columns; i++)
+        {
+            for (int j = 0; j < rows; j++)
+            {
+                transposed[j][i] = original[i][j];
+            }
+        }
+        
+        return transposed;
     }
 }
