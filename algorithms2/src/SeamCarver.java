@@ -11,12 +11,19 @@ public class SeamCarver
 {
     private static final double BORDER_PIXEL_ENERGY = 1000.0;
     private boolean vertical = true;
-    private Picture picture;
+    private int[][] color;
     private double[][] energy;
-    
+
     public SeamCarver(Picture picture) 
     {
-        this.picture = picture;
+        color = new int[picture.width()][picture.height()];
+        for (int y = 0; y < height(); y++) 
+        {
+            for (int x = 0; x < width(); x++) 
+            {
+                color[x][y] = picture.get(x, y).getRGB();
+            }
+        }
         
         energy = new double[picture.width()][picture.height()];
         for (int y = 0; y < height(); y++) 
@@ -27,20 +34,30 @@ public class SeamCarver
             }
         }
     }
-    
+
     public Picture picture() 
     {
+        Picture picture = new Picture(width(), height());
+
+        for (int y = 0; y < height(); y++) 
+        {
+            for (int x = 0; x < width(); x++) 
+            {
+                picture.set(x, y, new Color(color[x][y]));
+            }
+        }
+
         return picture;
     }
-    
+
     public int width() 
     {
-        return picture.width();
+        return color.length;
     }
-    
+
     public int height() 
     {
-        return picture.height();
+        return color[0].length;
     }
     /**
      *  Energy of pixel at column x and row y.  Uses the dual gradient energy function which is:
@@ -58,18 +75,19 @@ public class SeamCarver
     {
         if (x < 0 || x > width() - 1) throw new IndexOutOfBoundsException("x index out of bounds, x: " + x);
         if (y < 0 || y > height() - 1) throw new IndexOutOfBoundsException("y index out of bounds, y: " + y);
-        
+
         if (x == 0 || x == width() - 1 || y == 0 || y == height() - 1) 
         {
             return BORDER_PIXEL_ENERGY;
         }
         
-        double deltaXSquared = sumRgbDeltasSquared(picture.get(x - 1, y), picture.get(x + 1, y));
-        double deltaYSquared = sumRgbDeltasSquared(picture.get(x, y - 1), picture.get(x, y + 1));
+        double deltaXSquared = sumRgbDeltasSquared(new Color(color[x-1][y]), new Color(color[x+1][y]));
+        double deltaYSquared = sumRgbDeltasSquared(new Color(color[x][y-1]), new Color(color[x][y+1]));
+        
         double unroundedResult = Math.sqrt(deltaXSquared + deltaYSquared);
         return Math.round(unroundedResult*100.0) / 100.0;
     }
-    
+
     /**
      * Square of the gradient Δ^2(x, y) = R(x, y)^2 + G(x, y)^2 + B(x, y)^2
      */
@@ -80,7 +98,7 @@ public class SeamCarver
         int blue = a.getBlue() - b.getBlue();
         return red * red + green * green + blue * blue;
     }
-    
+
     /**
      * @return a sequence of indices for horizontal seam
      */
@@ -90,10 +108,10 @@ public class SeamCarver
         {
             return findSeamWhenOppositeOrientation(energy);
         }
-        
+
         return findSeam(energy);
     }
-    
+
     /**
      * @return a sequence of indices for vertical seam
      */
@@ -103,33 +121,33 @@ public class SeamCarver
         {
             return findSeamWhenOppositeOrientation(energy);
         }
-        
+
         return findSeam(energy);
     }
-    
+
     private int[] findSeamWhenOppositeOrientation(double[][] matrix)
     {
         toggleOrientation();
         return findSeam(transposeMatrix(energy));
     }
-    
+
     private void toggleOrientation()
     {
         vertical = !vertical;
     }
-    
+
     private boolean isVerticalOrientation()
     {
         return vertical;
     }
-    
+
     private int[] findSeam(double[][] matrix)
     {
         VertexWeightedDiGraph graph = new VertexWeightedDiGraph(matrix);
         Seam seam = new Seam(graph);
         return seam.seam();
     }
-    
+
     /**
      * Remove horizontal seam from current picture
      */
@@ -139,7 +157,7 @@ public class SeamCarver
             throw new IllegalArgumentException("Seam length must not be greater than image width.");
         }
     }
-    
+
     /**
      * Remove vertical seam from current picture
      */
@@ -151,7 +169,7 @@ public class SeamCarver
             throw new IllegalArgumentException("Seam length must not be greater than image height.");
         }
     }
-    
+
     private void validateSeam(int[] seam) 
     {
         if (seam == null) throw new NullPointerException("seam can not be null");
@@ -165,14 +183,14 @@ public class SeamCarver
             }
         }
     }
-    
+
     public static double[][] transposeMatrix(double [][] original)
     {
         int rows = original[0].length;
         int columns = original.length;
-        
+
         double[][] transposed = new double[rows][columns];
-        
+
         for (int i = 0; i < columns; i++)
         {
             for (int j = 0; j < rows; j++)
@@ -180,7 +198,7 @@ public class SeamCarver
                 transposed[j][i] = original[i][j];
             }
         }
-        
+
         return transposed;
     }
 }
