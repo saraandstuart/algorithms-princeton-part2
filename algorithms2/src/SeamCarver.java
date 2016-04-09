@@ -10,6 +10,7 @@ import edu.princeton.cs.algs4.Picture;
 public class SeamCarver
 {
     private static final double BORDER_PIXEL_ENERGY = 1000.0;
+    private boolean vertical = true;
     private Picture picture;
     private double[][] energy;
     
@@ -42,19 +43,14 @@ public class SeamCarver
         return picture.height();
     }
     /**
-     *  Energy of pixel at column x and row y.
-     *  Uses the dual gradient energy function which is:
+     *  Energy of pixel at column x and row y.  Uses the dual gradient energy function which is:
      *  <p>
-     *  The energy of pixel (x, y) is sqrt ( Δx^2(x, y) + Δy^2(x, y) ), 
-     *  where the square of the x-gradient 
-     *  Δx^2(x, y) = Rx(x, y)^2 + Gx(x, y)^2 + Bx(x, y)^2, 
-     *  and where the central differences 
-     *  Rx(x, y), Gx(x, y), and Bx(x, y) 
-     *  are the absolute value in differences of red, green, and blue 
+     *  The energy of pixel (x, y) is sqrt ( Δx^2(x, y) + Δy^2(x, y) ), where the square of the x-gradient 
+     *  Δx^2(x, y) = Rx(x, y)^2 + Gx(x, y)^2 + Bx(x, y)^2, and where the central differences 
+     *  Rx(x, y), Gx(x, y), and Bx(x, y) are the absolute value in differences of red, green, and blue 
      *  components between pixel (x + 1, y) and pixel (x − 1, y).
      *  <p>
-     *  The square of the y-gradient Δy^2(x, y) is defined in an analogous 
-     *  manner.
+     *  The square of the y-gradient Δy^2(x, y) is defined in an analogous manner.
      *  <p>
      *  We define the energy of pixels at the border of the image to be 1000.
      */
@@ -90,8 +86,12 @@ public class SeamCarver
      */
     public int[] findHorizontalSeam() 
     {
-        double[][] transposedEnergy = transposeMatrix(energy);
-        return findSeam(transposedEnergy);
+        if(isVerticalOrientation())
+        {
+            return findSeamWhenOppositeOrientation(energy);
+        }
+        
+        return findSeam(energy);
     }
     
     /**
@@ -99,7 +99,28 @@ public class SeamCarver
      */
     public int[] findVerticalSeam() 
     {
+        if(!isVerticalOrientation())
+        {
+            return findSeamWhenOppositeOrientation(energy);
+        }
+        
         return findSeam(energy);
+    }
+    
+    private int[] findSeamWhenOppositeOrientation(double[][] matrix)
+    {
+        toggleOrientation();
+        return findSeam(transposeMatrix(energy));
+    }
+    
+    private void toggleOrientation()
+    {
+        vertical = !vertical;
+    }
+    
+    private boolean isVerticalOrientation()
+    {
+        return vertical;
     }
     
     private int[] findSeam(double[][] matrix)
