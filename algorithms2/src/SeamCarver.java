@@ -108,7 +108,7 @@ public class SeamCarver
         {
             return findSeamWhenOppositeOrientation(energy);
         }
-
+        
         return findSeam(energy);
     }
 
@@ -130,17 +130,17 @@ public class SeamCarver
         toggleOrientation();
         return findSeam(transposeMatrix(energy));
     }
-
+    
     private void toggleOrientation()
     {
         vertical = !vertical;
     }
-
+    
     private boolean isVerticalOrientation()
     {
         return vertical;
     }
-
+    
     private int[] findSeam(double[][] matrix)
     {
         VertexWeightedDiGraph graph = new VertexWeightedDiGraph(matrix);
