@@ -17,18 +17,18 @@ public class SeamCarver
     public SeamCarver(Picture picture) 
     {
         color = new int[picture.width()][picture.height()];
-        for (int y = 0; y < height(); y++) 
+        for (int x = 0; x < width(); x++) 
         {
-            for (int x = 0; x < width(); x++) 
+            for (int y = 0; y < height(); y++) 
             {
                 color[x][y] = picture.get(x, y).getRGB();
             }
         }
-        
+
         energy = new double[picture.width()][picture.height()];
-        for (int y = 0; y < height(); y++) 
+        for (int x = 0; x < width(); x++) 
         {
-            for (int x = 0; x < width(); x++) 
+            for (int y = 0; y < height(); y++) 
             {
                 energy[x][y] = energy(x, y);
             }
@@ -39,9 +39,9 @@ public class SeamCarver
     {
         Picture picture = new Picture(width(), height());
 
-        for (int y = 0; y < height(); y++) 
+        for (int x = 0; x < width(); x++) 
         {
-            for (int x = 0; x < width(); x++) 
+            for (int y = 0; y < height(); y++) 
             {
                 picture.set(x, y, new Color(color[x][y]));
             }
@@ -59,6 +59,7 @@ public class SeamCarver
     {
         return color[0].length;
     }
+
     /**
      *  Energy of pixel at column x and row y.  Uses the dual gradient energy function which is:
      *  <p>
@@ -80,10 +81,10 @@ public class SeamCarver
         {
             return BORDER_PIXEL_ENERGY;
         }
-        
+
         double deltaXSquared = sumRgbDeltasSquared(new Color(color[x-1][y]), new Color(color[x+1][y]));
         double deltaYSquared = sumRgbDeltasSquared(new Color(color[x][y-1]), new Color(color[x][y+1]));
-        
+
         double unroundedResult = Math.sqrt(deltaXSquared + deltaYSquared);
         return Math.round(unroundedResult*100.0) / 100.0;
     }
@@ -101,6 +102,9 @@ public class SeamCarver
 
     /**
      * @return a sequence of indices for horizontal seam
+     *         an array of length W such that entry x is 
+     *         the row number of the pixel to be removed 
+     *         from column x of the image.
      */
     public int[] findHorizontalSeam() 
     {
@@ -108,12 +112,15 @@ public class SeamCarver
         {
             return findSeamWhenOppositeOrientation(energy);
         }
-        
+
         return findSeam(energy);
     }
 
     /**
      * @return a sequence of indices for vertical seam
+     *         an array of length H such that entry y is 
+     *         the column number of the pixel to be removed 
+     *         from row y of the image.
      */
     public int[] findVerticalSeam() 
     {
@@ -130,17 +137,17 @@ public class SeamCarver
         toggleOrientation();
         return findSeam(transposeMatrix(energy));
     }
-    
+
     private void toggleOrientation()
     {
         vertical = !vertical;
     }
-    
+
     private boolean isVerticalOrientation()
     {
         return vertical;
     }
-    
+
     private int[] findSeam(double[][] matrix)
     {
         VertexWeightedDiGraph graph = new VertexWeightedDiGraph(matrix);
@@ -168,6 +175,54 @@ public class SeamCarver
         {
             throw new IllegalArgumentException("Seam length must not be greater than image height.");
         }
+
+        //debugging
+//        System.out.println(">>>SEAM:<<<");
+//        printArrayContents(seam);
+//        System.out.println();
+//        System.out.println(">>>ITERATION: original<<<");
+//        printColorArrayContents(color);
+        
+        // TODO (SS) - convert to 1-D array remove seam, convert back to 2-D array.  
+        //             This way you avoid the matrices becoming mis-aligned 
+        //             i.e. keep each column and row the same length
+        
+        for (int row = 0; row < seam.length; row++)
+        {
+            int col = seam[row];
+            int index = row - (seam.length - color[col].length);
+            color[col] = removeElementByIndex(color[col], index);
+
+            //debugging
+//            System.out.println(">>>ITERATION: " + row + "<<<");
+//            System.out.println(">>>COL: " + col + "<<<");
+//            System.out.println(">>>ROW: " + row + "<<<");
+//            System.out.println(">>>color[" + col + "][" + row + "]<<<");
+//            printColorArrayContents(color);
+
+        }
+
+        // seam index is row, value is col
+        // pixel to remove = color[col][row] => color[seam[x]][x]
+    }
+    
+    private static void printColorArrayContents(int[][] color)
+    {
+        for (int i = 0; i < color.length; i++)
+        {
+            printArrayContents(color[i]);
+            System.out.println();
+        }
+    }
+
+    private static void printArrayContents(int[] a)
+    {
+        String sep = "";
+        for (int i = 0; i < a.length ; i++)
+        {
+            System.out.print(sep + a[i]);
+            sep = ", ";
+        }
     }
 
     private void validateSeam(int[] seam) 
@@ -186,19 +241,40 @@ public class SeamCarver
 
     public static double[][] transposeMatrix(double [][] original)
     {
-        int rows = original[0].length;
-        int columns = original.length;
+        int width = original[0].length;
+        int height = original.length;
 
-        double[][] transposed = new double[rows][columns];
+        double[][] transposed = new double[width][height];
 
-        for (int i = 0; i < columns; i++)
+        for (int i = 0; i < height; i++)
         {
-            for (int j = 0; j < rows; j++)
+            for (int j = 0; j < width; j++)
             {
                 transposed[j][i] = original[i][j];
             }
         }
 
         return transposed;
+    }
+
+    private static int[] removeElementByIndex(int[] input, int index)
+    {
+        int[] result = new int[input.length - 1];
+
+        System.arraycopy(
+                input, 
+                0, 
+                result, 
+                0, 
+                index);
+        
+        System.arraycopy(
+                input,
+                index + 1,
+                result,
+                index,
+                input.length - index - 1);
+
+        return result;
     }
 }
