@@ -10,8 +10,9 @@ import edu.princeton.cs.algs4.Picture;
 public class SeamCarver
 {
     private static final double BORDER_PIXEL_ENERGY = 1000.0;
-    private boolean vertical = true;
+    private boolean colorVertical = true;
     private int[][] color;
+    private boolean energyVertical = true;
     private double[][] energy;
 
     public SeamCarver(Picture picture) 
@@ -26,6 +27,11 @@ public class SeamCarver
         }
 
         energy = new double[picture.width()][picture.height()];
+        calculateEnergies();
+    }
+    
+    private void calculateEnergies()
+    {
         for (int x = 0; x < width(); x++) 
         {
             for (int y = 0; y < height(); y++) 
@@ -37,6 +43,7 @@ public class SeamCarver
 
     public Picture picture() 
     {
+        orientateVertically();
         Picture picture = new Picture(width(), height());
 
         for (int x = 0; x < width(); x++) 
@@ -49,14 +56,70 @@ public class SeamCarver
 
         return picture;
     }
+    
+    private void orientateVertically()
+    {
+        if(!isEnergyVerticalOrientation())
+        {
+            toggleAndTransposeEnergy();
+        }
+        
+        if(!isColorVerticalOrientation())
+        {
+            toggleAndTransposeColor();
+        }
+    }
+    
+    private void orientateHorizontally()
+    {
+        if(isEnergyVerticalOrientation())
+        {
+            toggleAndTransposeEnergy();
+        }
+        
+        if(isColorVerticalOrientation())
+        {
+            toggleAndTransposeColor();
+        }
+    }
+    
+    private void toggleAndTranspose()
+    {
+        toggleAndTransposeEnergy();
+        toggleAndTransposeColor();
+    }
+    
+    private void toggleAndTransposeEnergy()
+    {
+        toggleEnergyOrientation();
+        energy = transposeMatrix(energy);
+    }
+    
+    private void toggleAndTransposeColor()
+    {
+        toggleColorOrientation();
+        color = transposeMatrix(color);
+    }
+    
+    private void toggleColorOrientation()
+    {
+        colorVertical = !colorVertical;
+    }
+
+    private boolean isColorVerticalOrientation()
+    {
+        return colorVertical;
+    }
 
     public int width() 
     {
+        orientateVertically();
         return color.length;
     }
 
     public int height() 
     {
+        orientateVertically();
         return color[0].length;
     }
 
@@ -108,7 +171,7 @@ public class SeamCarver
      */
     public int[] findHorizontalSeam() 
     {
-        if(isVerticalOrientation())
+        if(isEnergyVerticalOrientation())
         {
             return findSeamWhenOppositeOrientation(energy);
         }
@@ -124,7 +187,7 @@ public class SeamCarver
      */
     public int[] findVerticalSeam() 
     {
-        if(!isVerticalOrientation())
+        if(!isEnergyVerticalOrientation())
         {
             return findSeamWhenOppositeOrientation(energy);
         }
@@ -134,18 +197,18 @@ public class SeamCarver
 
     private int[] findSeamWhenOppositeOrientation(double[][] matrix)
     {
-        toggleOrientation();
+        toggleEnergyOrientation();
         return findSeam(transposeMatrix(energy));
     }
 
-    private void toggleOrientation()
+    private void toggleEnergyOrientation()
     {
-        vertical = !vertical;
+        energyVertical = !energyVertical;
     }
 
-    private boolean isVerticalOrientation()
+    private boolean isEnergyVerticalOrientation()
     {
-        return vertical;
+        return energyVertical;
     }
 
     private int[] findSeam(double[][] matrix)
@@ -163,6 +226,9 @@ public class SeamCarver
         if (seam.length > width()) {
             throw new IllegalArgumentException("Seam length must not be greater than image width.");
         }
+        
+        orientateVertically();
+        removeSeam(seam);
     }
 
     /**
@@ -176,55 +242,24 @@ public class SeamCarver
             throw new IllegalArgumentException("Seam length must not be greater than image height.");
         }
 
-        //debugging
-//        System.out.println(">>>SEAM:<<<");
-//        printArrayContents(seam);
-//        System.out.println();
-//        System.out.println(">>>ITERATION: original<<<");
-//        printColorArrayContents(color);
-        
-        // TODO (SS) - convert to 1-D array remove seam, convert back to 2-D array.  
-        //             This way you avoid the matrices becoming mis-aligned 
-        //             i.e. keep each column and row the same length
-        
+        orientateHorizontally();
+        removeSeam(seam);
+    }
+    
+    private void removeSeam(int[] seam)
+    {
         for (int row = 0; row < seam.length; row++)
         {
             int col = seam[row];
-            int index = row - (seam.length - color[col].length);
-            color[col] = removeElementByIndex(color[col], index);
-
-            //debugging
-//            System.out.println(">>>ITERATION: " + row + "<<<");
-//            System.out.println(">>>COL: " + col + "<<<");
-//            System.out.println(">>>ROW: " + row + "<<<");
-//            System.out.println(">>>color[" + col + "][" + row + "]<<<");
-//            printColorArrayContents(color);
-
+            color[row] = removeElementByIndex(color[row], col);
+            energy[row] = removeElementByIndex(energy[row], col);
         }
-
-        // seam index is row, value is col
-        // pixel to remove = color[col][row] => color[seam[x]][x]
+        
+        toggleAndTranspose();
+        // TODO (SS) - try optimisation to only update energy matrix for those energies along the seam.
+        calculateEnergies();
     }
     
-    private static void printColorArrayContents(int[][] color)
-    {
-        for (int i = 0; i < color.length; i++)
-        {
-            printArrayContents(color[i]);
-            System.out.println();
-        }
-    }
-
-    private static void printArrayContents(int[] a)
-    {
-        String sep = "";
-        for (int i = 0; i < a.length ; i++)
-        {
-            System.out.print(sep + a[i]);
-            sep = ", ";
-        }
-    }
-
     private void validateSeam(int[] seam) 
     {
         if (seam == null) throw new NullPointerException("seam can not be null");
@@ -256,10 +291,49 @@ public class SeamCarver
 
         return transposed;
     }
+    
+    public static int[][] transposeMatrix(int [][] original)
+    {
+        int width = original[0].length;
+        int height = original.length;
+
+        int[][] transposed = new int[width][height];
+
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                transposed[j][i] = original[i][j];
+            }
+        }
+
+        return transposed;
+    }
 
     private static int[] removeElementByIndex(int[] input, int index)
     {
         int[] result = new int[input.length - 1];
+
+        System.arraycopy(
+                input, 
+                0, 
+                result, 
+                0, 
+                index);
+        
+        System.arraycopy(
+                input,
+                index + 1,
+                result,
+                index,
+                input.length - index - 1);
+
+        return result;
+    }
+    
+    private static double[] removeElementByIndex(double[] input, int index)
+    {
+        double[] result = new double[input.length - 1];
 
         System.arraycopy(
                 input, 

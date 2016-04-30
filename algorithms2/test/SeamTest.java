@@ -101,8 +101,6 @@ public class SeamTest
             { 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000 }
         };
 
-
-
         VertexWeightedDiGraph graph = new VertexWeightedDiGraph(energy);
         Seam seam = new Seam(graph);
 

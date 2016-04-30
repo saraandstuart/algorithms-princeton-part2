@@ -39,13 +39,13 @@ public class Test
             color[row] = removeElementByIndex(color[row], col);
         }
         
+        System.out.print("after[row][col]: \n");
+        print2DArrayContents(color);
+        
         color = transposeMatrix(color);
         System.out.print("transposed[col][row]: \n");
         print2DArrayContents(color);
         System.out.println();
-
-        System.out.print("after[col][row]: \n");
-        print2DArrayContents(color);
     }
 
     private static int[] removeElementByIndex(int[] input, int index)

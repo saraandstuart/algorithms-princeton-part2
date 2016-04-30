@@ -1,6 +1,5 @@
 import static org.junit.Assert.assertArrayEquals;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.princeton.cs.algs4.Picture;
@@ -198,7 +197,6 @@ public class SeamCarverTest {
         assertArrayEquals(expectedResult, SeamCarver.transposeMatrix(original));
     }
 
-    @Ignore
     @Test
     public void removeVerticalSeam5x6()
     {
@@ -206,46 +204,52 @@ public class SeamCarverTest {
         Picture inputImg = new Picture("seamCarving/5x6.png");
         SeamCarver sc = new SeamCarver(inputImg);
 
-//        double[][] originalEnergy = new double[][]{
-//            { 1000.00, 1000.00, 1000.00, 1000.00, 1000.00 },
-//            { 1000.00, 300.07, 265.33, 289.67, 1000.00 },
-//            { 1000.00, 311.94, 94.36, 309.61, 1000.00 },
-//            { 1000.00, 295.49, 312.36, 193.36, 1000.00 },
-//            { 1000.00, 264.36, 216.49, 299.43, 1000.00 },
-//            { 1000.00, 1000.00, 1000.00, 1000.00, 1000.00 }
-//        };
-        
         double[][] expectedEnergy = new double[][]{
             { 1000.00, 1000.00, 1000.00, 1000.00 },
-            { 1000.00, 300.07, 289.67, 1000.00 },
-            { 1000.00, 311.94, 309.61, 1000.00 },
-            { 1000.00, 295.49, 312.36, 1000.00 },
-            { 1000.00, 264.36, 299.43, 1000.00 },
+            { 1000.00, 301.53, 236.28, 1000.00 },
+            { 1000.00, 291.29, 119.93, 1000.00 },
+            { 1000.00, 295.49, 239.54, 1000.00 },
+            { 1000.00, 260.2, 366.33, 1000.00 },
             { 1000.00, 1000.00, 1000.00, 1000.00 }
         };
-
-//        int[][] originalColor = new int[][]{
-//            {-445562, -16148736, -16760564, -10241139, -1158072},
-//            {-14674084, -4427172, -10412488, -8694510, -4861649},
-//            {-9091930, -973692, -2185447, -508867, -6017900},
-//            {-15171944, -16420876, -13814735, -2383125, -9448886},
-//            {-13624701, -16085708, -15835083, -4509319, -1573535},
-//            {-3768212, -11678942, -12624350, -9907202, -637481}
-//        };
-//        
-//        int[][] expectedColor = new int[][]{
-//            {-445562, -16760564, -10241139, -1158072},
-//            {-14674084, -4427172, -8694510, -4861649},
-//            {-9091930, -973692, -508867, -6017900},
-//            {-15171944, -16420876, -13814735, -9448886},
-//            {-13624701, -16085708, -4509319, -1573535},
-//            {-3768212, -12624350, -9907202, -637481}
-//        };
         
         int[] seam = new int[]{1,2,2,3,2,1};
 
         //when
         sc.removeVerticalSeam(seam);
+        
+        int height = sc.height();
+        int width = sc.width();
+        double[][] actualEnergy = new double[height][width];
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                actualEnergy[j][i] = sc.energy(i, j);
+            }
+        }
+
+        //then
+        assertArrayEquals(expectedEnergy, actualEnergy);
+    }
+    
+    @Test
+    public void removeHorizontalSeam5x6()
+    {
+        //given
+        Picture inputImg = new Picture("seamCarving/5x6.png");
+        SeamCarver sc = new SeamCarver(inputImg);
+
+        double[][] expectedEnergy = new double[][]{
+            { 1000.00, 1000.00, 1000.00, 1000.00, 1000.00 },
+            { 1000.00, 274.04, 118.76, 289.67, 1000.00 },
+            { 1000.00, 224.81, 326.18, 214.35, 1000.00 },
+            { 1000.00, 264.36, 216.49, 393.01, 1000.00 },
+            { 1000.00, 1000.0, 1000.0, 1000.0, 1000.00 }
+        };
+        
+        int[] seam = new int[]{1,2,2,3,2};
+
+        //when
+        sc.removeHorizontalSeam(seam);
         
         int height = sc.height();
         int width = sc.width();
