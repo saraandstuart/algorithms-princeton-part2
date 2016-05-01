@@ -270,7 +270,7 @@ public class SeamCarver
         }
     }
 
-    public static double[][] transposeMatrix(double [][] original)
+    private static double[][] transposeMatrix(double [][] original)
     {
         int width = original[0].length;
         int height = original.length;
@@ -288,7 +288,7 @@ public class SeamCarver
         return transposed;
     }
     
-    public static int[][] transposeMatrix(int [][] original)
+    private static int[][] transposeMatrix(int [][] original)
     {
         int width = original[0].length;
         int height = original.length;
