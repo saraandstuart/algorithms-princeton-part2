@@ -224,6 +224,14 @@ public class SeamCarver
             throw new IllegalArgumentException("Seam length must not be greater than image width.");
         }
         
+        for (int i = 0; i < seam.length - 1; i++) 
+        {
+            if (seam[i] < 0 || seam[i] > width())
+            {
+                throw new IllegalArgumentException("Entry is no between 0 and " + width() + ".");
+            }
+        }
+        
         orientateVertically();
         removeSeam(seam);
     }
@@ -237,6 +245,14 @@ public class SeamCarver
         if (seam.length > height()) 
         {
             throw new IllegalArgumentException("Seam length must not be greater than image height.");
+        }
+        
+        for (int i = 0; i < seam.length - 1; i++) 
+        {
+            if (seam[i] < 0 || seam[i] > height())
+            {
+                throw new IllegalArgumentException("Entry is no between 0 and " + height() + ".");
+            }
         }
 
         orientateHorizontally();
@@ -260,7 +276,7 @@ public class SeamCarver
     private void validateSeam(int[] seam) 
     {
         if (seam == null) throw new NullPointerException("seam can not be null");
-        if (seam.length <= 1) throw new IllegalArgumentException("Seam size must be greater than 1.");
+        if (seam.length < 1) throw new IllegalArgumentException("Seam size must be at least 1.");
 
         for (int i = 0; i < seam.length - 1; i++) 
         {
