@@ -217,18 +217,19 @@ public class SeamCarver
     /**
      * Remove horizontal seam from current picture
      */
-    public void removeHorizontalSeam(int[] seam) {
+    public void removeHorizontalSeam(int[] seam) 
+    {
         validateSeam(seam);
-        
-        if (seam.length > width()) {
-            throw new IllegalArgumentException("Seam length must not be greater than image width.");
+        int height = height();
+        if (seam.length > height) {
+            throw new IllegalArgumentException("Seam length must not be greater than image height.");
         }
         
         for (int i = 0; i < seam.length - 1; i++) 
         {
-            if (seam[i] < 0 || seam[i] > width())
+            if (seam[i] < 0 || seam[i] > height)
             {
-                throw new IllegalArgumentException("Entry is no between 0 and " + width() + ".");
+                throw new IllegalArgumentException("Entry is no between 0 and " + height + ".");
             }
         }
         
@@ -242,16 +243,17 @@ public class SeamCarver
     public void removeVerticalSeam(int[] seam) 
     {
         validateSeam(seam);
-        if (seam.length > height()) 
+        int width = width();
+        if (seam.length > width) 
         {
-            throw new IllegalArgumentException("Seam length must not be greater than image height.");
+            throw new IllegalArgumentException("Seam length must not be greater than image width.");
         }
         
         for (int i = 0; i < seam.length - 1; i++) 
         {
-            if (seam[i] < 0 || seam[i] > height())
+            if (seam[i] < 0 || seam[i] > width)
             {
-                throw new IllegalArgumentException("Entry is no between 0 and " + height() + ".");
+                throw new IllegalArgumentException("Entry is not between 0 and " + width + ".");
             }
         }
 
