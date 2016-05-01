@@ -1,5 +1,7 @@
 import static org.junit.Assert.assertArrayEquals;
 
+import java.lang.reflect.Method;
+
 import org.junit.Test;
 
 import edu.princeton.cs.algs4.Picture;
@@ -176,8 +178,9 @@ public class SeamCarverTest {
     }
 
     @Test
-    public void transposeMatrix()
+    public void transposeMatrix() throws Exception
     {
+        //given
         double[][] original = new double[][]{
             { 1000.00, 1000.00, 1000.00 },  
             { 1000.00, 294.32, 1000.00 }, 
@@ -188,13 +191,22 @@ public class SeamCarverTest {
             { 1000.00, 1000.00, 1000.00 }
         };
 
-        double[][] expectedResult = new double[][]{
+        double[][] expected = new double[][]{
             { 1000.00, 1000.00, 1000.00, 1000.00, 1000.00, 1000.00, 1000.00 },  
             { 1000.00, 294.32, 236.17, 325.15, 251.36, 279.64, 1000.00 }, 
             { 1000.00, 1000.00, 1000.00, 1000.00, 1000.00, 1000.00, 1000.00 } 
         };
 
-        assertArrayEquals(expectedResult, SeamCarver.transposeMatrix(original));
+        SeamCarver sc = new SeamCarver(new Picture("seamCarving/5x6.png"));
+
+        //when
+        
+        Method transposeMatrix = SeamCarver.class.getDeclaredMethod("transposeMatrix", double[][].class);
+        transposeMatrix.setAccessible(true);
+        double[][] actual = (double[][]) transposeMatrix.invoke(sc, original);
+        
+        //then
+        assertArrayEquals(expected, actual);
     }
 
     @Test

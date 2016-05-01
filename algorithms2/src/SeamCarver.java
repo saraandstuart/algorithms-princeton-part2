@@ -60,12 +60,12 @@ public class SeamCarver
     
     private void orientateVertically()
     {
-        if(!isEnergyVerticalOrientation())
+        if (!isEnergyVerticalOrientation())
         {
             toggleAndTransposeEnergy();
         }
         
-        if(!isColorVerticalOrientation())
+        if (!isColorVerticalOrientation())
         {
             toggleAndTransposeColor();
         }
@@ -73,12 +73,12 @@ public class SeamCarver
     
     private void orientateHorizontally()
     {
-        if(isEnergyVerticalOrientation())
+        if (isEnergyVerticalOrientation())
         {
             toggleAndTransposeEnergy();
         }
         
-        if(isColorVerticalOrientation())
+        if (isColorVerticalOrientation())
         {
             toggleAndTransposeColor();
         }
@@ -149,8 +149,9 @@ public class SeamCarver
         double deltaXSquared = sumRgbDeltasSquared(new Color(color[x-1][y]), new Color(color[x+1][y]));
         double deltaYSquared = sumRgbDeltasSquared(new Color(color[x][y-1]), new Color(color[x][y+1]));
 
-        double unroundedResult = Math.sqrt(deltaXSquared + deltaYSquared);
-        return Math.round(unroundedResult*100.0) / 100.0;
+//        double unroundedResult = Math.sqrt(deltaXSquared + deltaYSquared);
+//        return Math.round(unroundedResult*100.0) / 100.0;
+        return Math.sqrt(deltaXSquared + deltaYSquared);
     }
 
     /**
@@ -172,7 +173,7 @@ public class SeamCarver
      */
     public int[] findHorizontalSeam() 
     {
-        if(isEnergyVerticalOrientation())
+        if (isEnergyVerticalOrientation())
         {
             toggleAndTransposeEnergy();
         }
@@ -188,7 +189,7 @@ public class SeamCarver
      */
     public int[] findVerticalSeam() 
     {
-        if(!isEnergyVerticalOrientation())
+        if (!isEnergyVerticalOrientation())
         {
             toggleAndTransposeEnergy();
         }
