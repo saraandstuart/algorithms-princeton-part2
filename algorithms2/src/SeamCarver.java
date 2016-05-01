@@ -224,8 +224,10 @@ public class SeamCarver
         validateSeam(seam);
         int height = height(); //# rows
         int width = width(); // # cols
-        if (seam.length > width) {
-            throw new IllegalArgumentException("Seam length must not be greater than image width.");
+        if (seam.length != width) 
+        {
+            throw new IllegalArgumentException(
+                    "the length of the seam is " + seam.length + " (but it should be " + width + ")");
         }
         
         for (int i = 0; i < seam.length; i++) 
@@ -248,9 +250,10 @@ public class SeamCarver
         validateSeam(seam);
         int height = height(); //# rows
         int width = width(); //# cols
-        if (seam.length > height) 
+        if (seam.length != height) 
         {
-            throw new IllegalArgumentException("Seam length must not be greater than image height.");
+            throw new IllegalArgumentException(
+                    "the length of the seam is " + seam.length + " (but it should be " + height + ")");
         }
         
         for (int i = 0; i < seam.length; i++) 
