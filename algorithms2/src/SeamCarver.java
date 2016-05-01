@@ -18,6 +18,8 @@ public class SeamCarver
     public SeamCarver(Picture picture) 
     {
         color = new int[picture.width()][picture.height()];
+        energy = new double[picture.width()][picture.height()];
+
         for (int x = 0; x < width(); x++) 
         {
             for (int y = 0; y < height(); y++) 
@@ -26,7 +28,6 @@ public class SeamCarver
             }
         }
 
-        energy = new double[picture.width()][picture.height()];
         calculateEnergies();
     }
     
@@ -173,7 +174,7 @@ public class SeamCarver
     {
         if(isEnergyVerticalOrientation())
         {
-            return findSeamWhenOppositeOrientation(energy);
+            toggleAndTransposeEnergy();
         }
 
         return findSeam(energy);
@@ -189,16 +190,10 @@ public class SeamCarver
     {
         if(!isEnergyVerticalOrientation())
         {
-            return findSeamWhenOppositeOrientation(energy);
+            toggleAndTransposeEnergy();
         }
 
         return findSeam(energy);
-    }
-
-    private int[] findSeamWhenOppositeOrientation(double[][] matrix)
-    {
-        toggleEnergyOrientation();
-        return findSeam(transposeMatrix(energy));
     }
 
     private void toggleEnergyOrientation()
@@ -223,6 +218,7 @@ public class SeamCarver
      */
     public void removeHorizontalSeam(int[] seam) {
         validateSeam(seam);
+        
         if (seam.length > width()) {
             throw new IllegalArgumentException("Seam length must not be greater than image width.");
         }
