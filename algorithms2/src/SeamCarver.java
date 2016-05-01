@@ -112,12 +112,14 @@ public class SeamCarver
         return colorVertical;
     }
 
-    public int width() 
+    // # cols
+    public int width()
     {
         orientateVertically();
         return color.length;
     }
 
+    // # rows
     public int height() 
     {
         orientateVertically();
@@ -220,16 +222,17 @@ public class SeamCarver
     public void removeHorizontalSeam(int[] seam) 
     {
         validateSeam(seam);
-        int height = height();
-        if (seam.length > height) {
-            throw new IllegalArgumentException("Seam length must not be greater than image height.");
+        int height = height(); //# rows
+        int width = width(); // # cols
+        if (seam.length > width) {
+            throw new IllegalArgumentException("Seam length must not be greater than image width.");
         }
         
-        for (int i = 0; i < seam.length - 1; i++) 
+        for (int i = 0; i < seam.length; i++) 
         {
-            if (seam[i] < 0 || seam[i] > height)
+            if (seam[i] < 0 || seam[i] > height-1)
             {
-                throw new IllegalArgumentException("Entry is no between 0 and " + height + ".");
+                throw new IllegalArgumentException("Entry is not between 0 and " + height + " : " + seam[i] + ".");
             }
         }
         
@@ -243,17 +246,18 @@ public class SeamCarver
     public void removeVerticalSeam(int[] seam) 
     {
         validateSeam(seam);
-        int width = width();
-        if (seam.length > width) 
+        int height = height(); //# rows
+        int width = width(); //# cols
+        if (seam.length > height) 
         {
-            throw new IllegalArgumentException("Seam length must not be greater than image width.");
+            throw new IllegalArgumentException("Seam length must not be greater than image height.");
         }
         
-        for (int i = 0; i < seam.length - 1; i++) 
+        for (int i = 0; i < seam.length; i++) 
         {
-            if (seam[i] < 0 || seam[i] > width)
+            if (seam[i] < 0 || seam[i] > width-1)
             {
-                throw new IllegalArgumentException("Entry is not between 0 and " + width + ".");
+                throw new IllegalArgumentException("Entry is not between 0 and " + width + " : " + seam[i] + ".");
             }
         }
 
